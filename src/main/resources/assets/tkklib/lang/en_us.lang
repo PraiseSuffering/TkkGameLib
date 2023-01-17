@@ -1,0 +1,25 @@
+#command
+command.tkkJSRegEvent.usage=/tkkJSRegEvent <id> <fileName+.js / jsCode> <class> <client/server> [player]
+command.tkkJSRegEvent.error.lack=Error: Parameter missing
+command.tkkJSRegEvent.error.codeError=Error: JS code
+command.tkkJSRegEvent.error.classError=Error: class error
+command.tkkJSRegEvent.message.return=returned value:
+command.tkkJSRegEvent.error.type=Error:type error
+
+command.tkkJSUnregEvent.usage=/tkkJs <id> <server/client> [player]
+command.tkkJSUnregEvent.error.message=Logout event successful? :
+command.tkkJSUnregEvent.error.lack=Error: Parameter missing
+command.tkkJSUnregEvent.error.type=Error:type error
+
+command.tkkJS.usage=/tkkJs <fileName+.js / jsCode> <functionName> <client/server> [player]
+command.tkkJS.JsServerPrint=Print :
+command.tkkJS.error.lack=Error: Parameter missing
+command.tkkJS.error.codeError=Error: JS code
+command.tkkJS.error.typeError=Error:type error
+
+command.tkkJSRunFile.usage=/tkkJs <fileName+.js> <functionName> <client/server> [player]
+command.tkkJSRunFile.error.lack=Error: Parameter missing
+command.tkkJSRunFile.error.codeError=Error: JS code
+command.tkkJSRunFile.JsServerPrint=ServerPrint :
+command.tkkJSRunFile.error.typeError=Error:type error
+command.tkkJSRunFile.JsClientPrint=ClientPrint :

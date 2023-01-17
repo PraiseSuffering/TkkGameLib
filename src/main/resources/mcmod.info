@@ -1,0 +1,16 @@
+[
+{
+  "modid": "tkklib",
+  "name": "TkkGameLib",
+  "description": "新增超酷的js事件系统",
+  "version": "${version}",
+  "mcversion": "${mcversion}",
+  "url": "",
+  "updateUrl": "",
+  "authorList": ["Praise_Sufferin","2kk2"],
+  "credits": "万物皆虚无，时间流淌不断，一切烟消云散",
+  "logoFile": "",
+  "screenshots": [],
+  "dependencies": []
+}
+]

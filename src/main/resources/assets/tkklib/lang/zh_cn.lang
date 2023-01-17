@@ -1,0 +1,27 @@
+#command
+command.tkkJSRegEvent.usage=/tkkJSRegEvent <id> <fileName+.js / jsCode> <class> <client/server> [player]
+command.tkkJSRegEvent.error.lack=Error: 参数错误
+command.tkkJSRegEvent.error.codeError=Error: Js代码
+command.tkkJSRegEvent.error.classError=Error: class错误
+command.tkkJSRegEvent.message.return=返回值:
+command.tkkJSRegEvent.error.type=Error:类型错误
+
+command.tkkJSUnregEvent.usage=/tkkJs <id> <server/client> [player]
+command.tkkJSUnregEvent.error.message=成功注销事件？ ：
+command.tkkJSUnregEvent.error.lack=Error: 参数错误
+command.tkkJSUnregEvent.error.type=Error: 类型错误
+
+command.tkkJS.usage=/tkkJs <fileName+.js / jsCode> <functionName> <client/server> [player]
+command.tkkJS.JsServerPrint=输出:
+command.tkkJS.error.lack=Error: 参数错误
+command.tkkJS.error.codeError=Error: Js代码
+command.tkkJS.error.typeError=Error: 类型错误
+
+command.tkkJSRunFile.usage=/tkkJs <fileName+.js> <functionName> <client/server> [player]
+command.tkkJSRunFile.error.lack=Error: 参数错误
+command.tkkJSRunFile.error.codeError=Error: Js代码
+command.tkkJSRunFile.JsServerPrint=服务端输出 :
+command.tkkJSRunFile.error.typeError=Error:类型错误
+command.tkkJSRunFile.JsClientPrint=客户端输出 :
+
+
