@@ -1,6 +1,8 @@
 package com.twokktwo.tkklib.js;
 
+import com.google.common.collect.Lists;
 import com.twokktwo.tkklib.TkkGameLib;
+import com.twokktwo.tkklib.tool.miscTool;
 import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.fml.common.eventhandler.Event;
 import net.minecraftforge.fml.common.eventhandler.EventPriority;
@@ -8,6 +10,8 @@ import net.minecraftforge.fml.common.eventhandler.IEventListener;
 
 import java.io.*;
 import java.lang.reflect.Field;
+import java.nio.charset.StandardCharsets;
+import java.util.ArrayList;
 
 public class JsTool {
     public static void registerListener(Event event, int priority, JsContainer listener) throws NoSuchFieldException, IllegalAccessException {
@@ -29,6 +33,46 @@ public class JsTool {
         event.getListenerList().unregister(busID,listener);
     }
 
+    public static String[] getPluginJs(){
+        ArrayList<String> returnedVault= Lists.newArrayList();
+        try {
+            File file = new File(TkkGameLib.MOD_DIR.getCanonicalPath() + "/plugin/");
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            File[] list=file.listFiles(new FilenameFilter() {
+                @Override
+                public boolean accept(File dir, String name) {
+                    if(name.endsWith(".js")){return true;}
+                    return false;
+                }
+            });
+            for(File JSfile:list){
+                InputStreamReader fr = new InputStreamReader(new FileInputStream(JSfile), StandardCharsets.UTF_8);
+                BufferedReader br = new BufferedReader(fr);
+                StringBuffer jsCode=new StringBuffer();
+                String temp;
+                while ((temp= br.readLine())!=null){
+                    jsCode.append("\n"+temp);
+                }
+                fr.close();
+                br.close();
+                returnedVault.add(jsCode.toString());
+            }
+        }catch (Exception e){
+            TkkGameLib.print("getPluginJs error:"+ miscTool.getError(e));
+        }
+        String[] rt=new String[returnedVault.size()];
+        for(int i = 0;i<returnedVault.size();i++){
+            rt[i]=returnedVault.get(i);
+        }
+        return rt;
+    }
+
+    public static JsContainer getJS(String fileName){
+        return new JsContainer(getJsFile(fileName));
+    }
+
     public static String getJsFile(String filename){
         StringBuffer rt=new StringBuffer();
         try {
@@ -41,7 +85,7 @@ public class JsTool {
                 files.createNewFile();
             }
             if (files.exists()) {
-                FileReader fr = new FileReader(files);
+                InputStreamReader fr = new InputStreamReader(new FileInputStream(files), StandardCharsets.UTF_8);
                 BufferedReader br = new BufferedReader(fr);
                 String temp;
                 while ((temp= br.readLine())!=null){

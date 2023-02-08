@@ -1,9 +1,13 @@
 package com.twokktwo.tkklib.Command;
 
+import com.twokktwo.tkklib.JSPluginManager;
 import com.twokktwo.tkklib.TkkGameLib;
 import com.twokktwo.tkklib.gui.testGuiTool;
 import com.twokktwo.tkklib.js.JsContainer;
 import com.twokktwo.tkklib.js.JsTool;
+import com.twokktwo.tkklib.js.jsStorageTool;
+import com.twokktwo.tkklib.keyBinding.KeyEventLoader;
+import com.twokktwo.tkklib.keyBinding.TkkKeyBinding;
 import com.twokktwo.tkklib.mapPiece.Piece;
 import com.twokktwo.tkklib.network.networkManager;
 import com.twokktwo.tkklib.network.regEventPacket;
@@ -26,13 +30,15 @@ import javax.script.Invocable;
 import javax.script.ScriptEngine;
 import javax.script.ScriptEngineManager;
 import javax.script.ScriptException;
+import java.util.Map;
+import java.util.Set;
 
 public class debugCommand extends CommandBase {
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] params) throws CommandException {
         World world = sender.getEntityWorld();
         if(params!=null && params.length==6){
-            TkkGameLib.tkkmap.hashMap.clear();
+            jsStorageTool.tkkmap.hashMap.clear();
             BlockPos pos1 = new BlockPos((double) parseInt(params[0]),(double) parseInt(params[1]),(double) parseInt(params[2]));
             BlockPos pos2 = new BlockPos((double) parseInt(params[3]),(double) parseInt(params[4]),(double) parseInt(params[5]));
         }
@@ -60,12 +66,12 @@ public class debugCommand extends CommandBase {
                 case "get":
                     long start1=System.nanoTime();
                     temp=new Piece("test",world,sender.getPosition(),new BlockPos(48,64,48));
-                    TkkGameLib.tempMap.put("test",temp);
+                    jsStorageTool.tempMap.put("test",temp);
                     long over2=(System.nanoTime()-start1)/1000000000;
                     sender.sendMessage(new TextComponentString("time:"+over2+"s"));
                     break;
                 case "mirror":
-                    Piece p=(Piece) TkkGameLib.tempMap.get("test");
+                    Piece p=(Piece) jsStorageTool.tempMap.get("test");
                     p.block.template.addBlock(world,sender.getPosition(),1);//左下
                     p.block.template.addBlock(world,sender.getPosition().add(48,0,0),0);//左上
                     p.block.template.addBlock(world,sender.getPosition().add(0,0,48),3);//右下
@@ -103,7 +109,43 @@ public class debugCommand extends CommandBase {
                     break;
                 case "getJS":
                     sender.sendMessage(new TextComponentString("getJS:"+JsTool.getJsFile("text")));
-                    return;
+                    break;
+                case "key":
+                    TkkKeyBinding key=new TkkKeyBinding("testKey","ALL","NONE",21,"testTab");
+                    key.setJS(new JsContainer(JsTool.getJsFile("keyTest")));
+                    if(!KeyEventLoader.registerKeyBinding("test",key)){
+                        KeyEventLoader.unregisterKeyBinding("test");
+                        sender.sendMessage(new TextComponentString("unreg"));
+                    }else {
+                        sender.sendMessage(new TextComponentString("reg"));
+                    }
+                    break;
+                case "iSee":
+                    //TkkGameLib.print("I see:"+ ClientTool.getMouseOver(1));
+                    break;
+                case "getFunction":
+                    JsContainer jsF=JsTool.getJS("test");
+                    Object tempFN=jsF.getVar("main");
+                    TkkGameLib.print("class:"+tempFN.getClass());
+                    TkkGameLib.print("is ScriptObjectMirror?:"+(tempFN instanceof ScriptObjectMirror));
+                    if (tempFN instanceof ScriptObjectMirror){
+                        Set<Map.Entry<String, Object>> tempSet=((ScriptObjectMirror) tempFN).entrySet();
+                        for(Map.Entry<String, Object> entry:tempSet){
+                            TkkGameLib.print("key= " + entry.getKey() + " and value= " + entry.getValue());
+                        }
+                    }
+                    break;
+                case "getPlugin":
+                    long start2=System.nanoTime();
+                    JsContainer[] plugs= JSPluginManager.INSTANCE.pluginSort(JSPluginManager.INSTANCE.getPluginList());
+                    long over3=System.nanoTime()-start2;
+                    int i=0;
+                    for(JsContainer z:plugs){
+                        TkkGameLib.print(i+"|plugin|"+z.run(JSPluginManager.INSTANCE.JS_FUNCTION_NAME_GET_PLUGIN_ID));
+                        i++;
+                    }
+                    TkkGameLib.print("time:"+over3);
+                    break;
                 default:
                     mapTool.see();
                     sender.sendMessage(new TextComponentString("错误的"+params[0]));

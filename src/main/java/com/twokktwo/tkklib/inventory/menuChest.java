@@ -112,7 +112,7 @@ public class menuChest extends Container implements Serializable {
         ClosedMenu event = new ClosedMenu(p_75134_1_,this);
         MinecraftForge.EVENT_BUS.post(event);
         if(lowerChestInventory instanceof menuInventory) {
-            if (((menuInventory) lowerChestInventory).cloneJSOpen) {
+            if (((menuInventory) lowerChestInventory).JSOpen) {
                 try {
                     ((menuInventory) lowerChestInventory).runJs(new menuInventory.CloseEvent((menuInventory)lowerChestInventory,p_75134_1_,false));
                 } catch (Exception e) {
@@ -133,7 +133,7 @@ public class menuChest extends Container implements Serializable {
         CloseMenu event1 = new CloseMenu(p_75134_1_,this);
         MinecraftForge.EVENT_BUS.post(event1);
         if(lowerChestInventory instanceof menuInventory) {
-            if (((menuInventory) lowerChestInventory).cloneJSOpen) {
+            if (((menuInventory) lowerChestInventory).JSOpen) {
                 try {
                     ((menuInventory) lowerChestInventory).runJs(new menuInventory.CloseEvent((menuInventory)lowerChestInventory,p_75134_1_,true));
                 } catch (Exception e) {
@@ -156,7 +156,7 @@ public class menuChest extends Container implements Serializable {
             return ItemStack.EMPTY;
         }
         if(lowerChestInventory instanceof menuInventory) {
-            if (((menuInventory) lowerChestInventory).clickJSOpen) {
+            if (((menuInventory) lowerChestInventory).JSOpen) {
                 ItemStack RI=ItemStack.EMPTY;
                 menuInventory.clickSlotEvent eventJs=new menuInventory.clickSlotEvent((menuInventory) this.lowerChestInventory, slotId, dragType, clickTypeIn, player,RI);
                 try {

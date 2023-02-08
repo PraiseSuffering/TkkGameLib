@@ -1,8 +1,9 @@
 package com.twokktwo.tkklib.tool.map;
 
 import com.twokktwo.tkklib.TkkGameLib;
-import com.twokktwo.tkklib.tool.arrayTool;
+import com.twokktwo.tkklib.js.jsStorageTool;
 import com.twokktwo.tkklib.mapPiece.Piece;
+import com.twokktwo.tkklib.tool.arrayTool;
 import com.twokktwo.tkklib.tool.tkkSerializationMap;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.world.World;
@@ -33,8 +34,8 @@ public class mapTool {
     public static HashMap<String,String> jsB = new HashMap<String,String>();
     public static boolean jsIsA=true;
     public mapTool(){
-        TkkGameLib.addAutoSaveMap("mapPiece");
-        map=TkkGameLib.map.get("mapPiece");
+        jsStorageTool.addAutoSaveMap("mapPiece");
+        map=jsStorageTool.map.get("mapPiece");
         map.getHashMap().putIfAbsent("block",new HashMap<String, Piece>());
         map.getHashMap().putIfAbsent("aisle",new ArrayList<String>());
         map.getHashMap().putIfAbsent("mapPiece",new ArrayList<String>());

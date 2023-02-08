@@ -1,6 +1,6 @@
 package com.twokktwo.tkklib.Command;
 
-import com.twokktwo.tkklib.TkkGameLib;
+import com.twokktwo.tkklib.js.jsStorageTool;
 import com.twokktwo.tkklib.mapPiece.template.Template;
 import com.twokktwo.tkklib.mapPiece.template.tkkEasyTemplate;
 import net.minecraft.command.CommandBase;
@@ -23,16 +23,16 @@ public class templateCommand  extends CommandBase {
             tkkEasyTemplate temp2 = new tkkEasyTemplate();
             temp2.template.takeBlock(world,AA,size);
             temp.takeBlock(world,AA,size);
-            TkkGameLib.tempMap.put("template",temp2);
-            TkkGameLib.tkkmap.hashMap.put("template",temp2);
-            TkkGameLib.tkkmap.save();
-            TkkGameLib.tkkmap.read();
+            jsStorageTool.tempMap.put("template",temp2);
+            jsStorageTool.tkkmap.hashMap.put("template",temp2);
+            jsStorageTool.tkkmap.save();
+            jsStorageTool.tkkmap.read();
             long overtime=System.nanoTime()-time;
             sender.sendMessage(new TextComponentString("get elapsed time:"+overtime+"ns"));
         }else{
             long time = System.nanoTime();
             //Template temp = (Template) TkkGameLib.tempMap.get("template");
-            tkkEasyTemplate temp = (tkkEasyTemplate) TkkGameLib.tkkmap.hashMap.get("template");
+            tkkEasyTemplate temp = (tkkEasyTemplate) jsStorageTool.tkkmap.hashMap.get("template");
             temp.template.addBlock(world,sender.getPosition());
             long overtime=System.nanoTime()-time;
             sender.sendMessage(new TextComponentString("fill elapsed time:"+overtime+"ns"));

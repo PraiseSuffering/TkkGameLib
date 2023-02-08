@@ -2,7 +2,7 @@
 {
   "modid": "tkklib",
   "name": "TkkGameLib",
-  "description": "新增超酷的js事件系统",
+  "description": "新增插件化的js脚本",
   "version": "${version}",
   "mcversion": "${mcversion}",
   "url": "",

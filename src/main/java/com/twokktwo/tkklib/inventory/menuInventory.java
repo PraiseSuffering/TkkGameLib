@@ -1,6 +1,7 @@
 package com.twokktwo.tkklib.inventory;
 
 import com.google.common.collect.Lists;
+import com.twokktwo.tkklib.js.JsContainer;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.inventory.ClickType;
 import net.minecraft.inventory.IInventory;
@@ -15,10 +16,6 @@ import net.minecraft.util.text.TextComponentTranslation;
 import net.minecraftforge.fml.relauncher.Side;
 import net.minecraftforge.fml.relauncher.SideOnly;
 
-import javax.script.Invocable;
-import javax.script.ScriptEngine;
-import javax.script.ScriptEngineManager;
-import javax.script.ScriptException;
 import java.util.List;
 
 
@@ -29,10 +26,8 @@ public class menuInventory implements IInventory {
     private List<IInventoryChangedListener> changeListeners;
     private boolean hasCustomName;
     public String id;
-    public boolean clickJSOpen;
-    public String clickJS="";
-    public boolean cloneJSOpen;
-    public String cloneJS="";
+    public boolean JSOpen;
+    public JsContainer JS=new JsContainer("");
 
     public String print="";
 
@@ -47,10 +42,8 @@ public class menuInventory implements IInventory {
         nbt.setTag("slotsCount",new NBTTagInt(slotsCount));
         nbt.setTag("hasCustomName",new NBTTagInt((hasCustomName)?1:0));
         nbt.setTag("id",new NBTTagString(id));
-        nbt.setTag("clickJSOpen",new NBTTagInt((clickJSOpen)?1:0));
-        nbt.setTag("clickJS",new NBTTagString(clickJS));
-        nbt.setTag("cloneJSOpen",new NBTTagInt((cloneJSOpen)?1:0));
-        nbt.setTag("cloneJS",new NBTTagString(cloneJS));
+        nbt.setTag("JSOpen",new NBTTagInt((JSOpen)?1:0));
+        nbt.setTag("JS",new NBTTagString(JS.js));
 
         return nbt;
     }
@@ -60,10 +53,8 @@ public class menuInventory implements IInventory {
         this.hasCustomName=(nbt.getInteger("hasCustomName")==1);
         this.id=nbt.getString("id");
 
-        this.clickJSOpen=(nbt.getInteger("clickJSOpen")==1);
-        this.clickJS=nbt.getString("clickJS");
-        this.cloneJSOpen=(nbt.getInteger("cloneJSOpen")==1);
-        this.cloneJS=nbt.getString("cloneJS");
+        this.JSOpen=(nbt.getInteger("JSOpen")==1);
+        this.JS=new JsContainer(nbt.getString("JS"));
 
 
         this.inventoryContents=NonNullList.<ItemStack>withSize(this.slotsCount, ItemStack.EMPTY);
@@ -89,19 +80,19 @@ public class menuInventory implements IInventory {
         this(title.getUnformattedText(), true, slotCount);
     }
 
-    public void runJs(clickSlotEvent event) throws ScriptException,NoSuchMethodException {
-        ScriptEngineManager mgr = new ScriptEngineManager(null);
-        ScriptEngine engine = mgr.getEngineByName("js");
-        engine.eval(this.clickJS);
-        Invocable inv = (Invocable) engine;
-        inv.invokeFunction("clickEvent", event);
+    public void runJs(clickSlotEvent event) throws Exception {
+        JS.run("clickEvent", event);
+        if(JS.errored){
+            JS.errored=false;
+            throw new Exception(JS.print);
+        }
     }
-    public void runJs(CloseEvent event) throws ScriptException,NoSuchMethodException {
-        ScriptEngineManager mgr = new ScriptEngineManager(null);
-        ScriptEngine engine = mgr.getEngineByName("js");
-        engine.eval(this.cloneJS);
-        Invocable inv = (Invocable) engine;
-        inv.invokeFunction("CloseEvent", event);
+    public void runJs(CloseEvent event) throws Exception {
+        JS.run("CloseEvent", event);
+        if(JS.errored){
+            JS.errored=false;
+            throw new Exception(JS.print);
+        }
     }
 
     public void addInventoryChangeListener(IInventoryChangedListener listener)
@@ -257,6 +248,9 @@ public class menuInventory implements IInventory {
             {
                 ((IInventoryChangedListener)this.changeListeners.get(i)).onInventoryChanged(this);
             }
+        }
+        if(JSOpen){
+            JS.run("markDirty",this);
         }
     }
 

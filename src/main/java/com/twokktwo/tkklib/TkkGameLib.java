@@ -2,13 +2,12 @@ package com.twokktwo.tkklib;
 
 import com.twokktwo.tkklib.Command.CommandLoader;
 import com.twokktwo.tkklib.js.JsContainer;
+import com.twokktwo.tkklib.js.jsStorageTool;
 import com.twokktwo.tkklib.proxy.ClientProxy;
 import com.twokktwo.tkklib.proxy.CommonProxy;
 import com.twokktwo.tkklib.tool.Tool;
 import com.twokktwo.tkklib.tool.configTool;
 import com.twokktwo.tkklib.tool.map.mapTool;
-import com.twokktwo.tkklib.tool.tkkFastMap;
-import com.twokktwo.tkklib.tool.tkkSerializationMap;
 import net.minecraft.server.MinecraftServer;
 import net.minecraftforge.fml.common.Mod;
 import net.minecraftforge.fml.common.Mod.EventHandler;
@@ -21,28 +20,18 @@ import org.apache.logging.log4j.Level;
 import org.apache.logging.log4j.Logger;
 
 import java.io.*;
-import java.util.Arrays;
-import java.util.HashMap;
 
 @Mod(modid = TkkGameLib.MODID, name = TkkGameLib.NAME, version = TkkGameLib.VERSION)
 public class TkkGameLib
 {
     public static final String MODID = "tkklib";
     public static final String NAME = "TkkGameLib";
-    public static final String VERSION = "1.6.1";
+    public static final String VERSION = "1.8.1";
 
     public static File MOD_DIR;
 
     public static MinecraftServer server;
 
-    //System storage (don't use it!)
-    public static tkkSerializationMap systemDate;
-    //==============================
-    public static HashMap tempMap = new HashMap();
-    public static tkkFastMap tkkmap;//old
-    public static tkkSerializationMap dateMap;//old
-    public static HashMap<String,tkkSerializationMap> map = new HashMap<String,tkkSerializationMap>();
-    public static HashMap<String,HashMap> temp = new HashMap<String,HashMap>();
     public static boolean canRunServerJs;
 
     public static JsContainer js;
@@ -65,22 +54,7 @@ public class TkkGameLib
         if (!MOD_DIR.exists()) {
             MOD_DIR.mkdir();
         }
-        //位置配置完毕
-        systemDate=new tkkSerializationMap("systemDate");
-        systemDate.getHashMap().putIfAbsent("autoSave",new String[]{"dateMap"});
-        systemDate.getHashMap().putIfAbsent("tempMap",new String[]{"temp"});
-        //获取systemDate完成
-        String[] mapArray=(String[]) systemDate.getHashMap().get("autoSave");
-        for(String mapName:mapArray){
-            map.put(mapName,new tkkSerializationMap(mapName));
-        }
-        String[] mapArray2=(String[]) systemDate.getHashMap().get("tempMap");
-        for(String mapName:mapArray2){
-            temp.put(mapName,new HashMap());
-        }
-        //map数组配置完毕
-        tkkmap=new tkkFastMap("default");//old
-        dateMap=new tkkSerializationMap("dateMap");//old
+        jsStorageTool.init(event);
         new mapTool();
         proxy.preInit(event);
         canRunServerJs= configTool.getConfigBool("canRunServerJs");
@@ -96,6 +70,21 @@ public class TkkGameLib
         }
         TkkGameLib.logger.log(Level.INFO,"MainJs.js run function FMLPreInitializationEvent");
         js.run("FMLPreInitializationEvent",event);
+
+
+        TkkGameLib.logger.log(Level.INFO,"TkkGameLib:loaderJSPlugin");
+        JSPluginManager.INSTANCE.loaderJSPlugin();
+        if(proxy instanceof ClientProxy){
+            TkkGameLib.logger.log(Level.INFO,"Plugins run function setIsClient(true)");
+            JSPluginManager.INSTANCE.callPluginRunFN("setIsClient",true);
+        }else{
+            TkkGameLib.logger.log(Level.INFO,"Plugins run function setIsClient(false)");
+            JSPluginManager.INSTANCE.callPluginRunFN("setIsClient",false);
+        }
+        TkkGameLib.logger.log(Level.INFO,"Plugins run function FMLPreInitializationEvent");
+        JSPluginManager.INSTANCE.callPluginRunFN("FMLPreInitializationEvent",event);
+
+
     }
 
     @EventHandler
@@ -104,6 +93,8 @@ public class TkkGameLib
         // some example code
         TkkGameLib.logger.log(Level.INFO,"MainJs.js run function FMLInitializationEvent");
         js.run("FMLInitializationEvent",event);
+        TkkGameLib.logger.log(Level.INFO,"Plugins run function FMLInitializationEvent");
+        JSPluginManager.INSTANCE.callPluginRunFN("FMLInitializationEvent",event);
 
     }
     @EventHandler
@@ -112,49 +103,19 @@ public class TkkGameLib
         new CommandLoader(event);
         TkkGameLib.logger.log(Level.INFO,"MainJs.js run function FMLServerStartingEvent");
         js.run("FMLServerStartingEvent",event);
+        TkkGameLib.logger.log(Level.INFO,"Plugins run function FMLServerStartingEvent");
+        JSPluginManager.INSTANCE.callPluginRunFN("FMLServerStartingEvent",event);
     }
     @EventHandler
     public void setAboutToStart(FMLServerAboutToStartEvent event) {
         this.server=event.getServer();
         TkkGameLib.logger.log(Level.INFO,"MainJs.js run function FMLServerAboutToStartEvent");
         js.run("FMLServerAboutToStartEvent",event);
+        TkkGameLib.logger.log(Level.INFO,"Plugins run function FMLServerAboutToStartEvent");
+        JSPluginManager.INSTANCE.callPluginRunFN("FMLServerAboutToStartEvent",event);
     }
 
 
-    public static boolean hasTempMap(String name){
-        String[] a=(String[])systemDate.getHashMap().get("tempMap");
-        return Arrays.asList(a).contains(name);
-    }
-    public static boolean hasAutoSaveMap(String name){
-        String[] a=(String[]) systemDate.getHashMap().get("autoSave");
-        return Arrays.asList(a).contains(name);
-    }
-    public static boolean addTempMap(String name){
-        if(hasTempMap(name)){
-            return false;
-        }else {
-            String[] old=(String[]) systemDate.getHashMap().get("tempMap");
-            String[] newArray=new String[old.length+1];
-            System.arraycopy(old, 0, newArray, 0, old.length);
-            newArray[newArray.length-1]=name;
-            systemDate.getHashMap().put("tempMap",newArray);
-            temp.put(name,new HashMap());
-            return true;
-        }
-    }
-    public static boolean addAutoSaveMap(String name){
-        if(hasAutoSaveMap(name)){
-            return false;
-        }else {
-            String[] old=(String[]) systemDate.getHashMap().get("autoSave");
-            String[] newArray=new String[old.length+1];
-            System.arraycopy(old, 0, newArray, 0, old.length);
-            newArray[newArray.length-1]=name;
-            systemDate.getHashMap().put("autoSave",newArray);
-            map.put(name,new tkkSerializationMap(name));
-            return true;
-        }
-    }
     public static void print(String str){
         logger.log(Level.INFO,str);
     }

@@ -17,7 +17,7 @@ command.tkkJS.error.lack=Error: 参数错误
 command.tkkJS.error.codeError=Error: Js代码
 command.tkkJS.error.typeError=Error: 类型错误
 
-command.tkkJSRunFile.usage=/tkkJs <fileName+.js> <functionName> <client/server> [player]
+command.tkkJSRunFile.usage=/tkkJSRunFile <fileName+.js> <functionName> <client/server> [player]
 command.tkkJSRunFile.error.lack=Error: 参数错误
 command.tkkJSRunFile.error.codeError=Error: Js代码
 command.tkkJSRunFile.JsServerPrint=服务端输出 :

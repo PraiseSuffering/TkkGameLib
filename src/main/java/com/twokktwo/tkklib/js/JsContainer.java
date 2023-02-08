@@ -1,6 +1,7 @@
 package com.twokktwo.tkklib.js;
 
 import com.twokktwo.tkklib.TkkGameLib;
+import com.twokktwo.tkklib.tool.miscTool;
 
 import javax.script.*;
 import java.io.PrintWriter;
@@ -46,23 +47,31 @@ public class JsContainer{
         }
         this.print = message + "\n" + this.print;
     }
-    public void run(String fn,Object... args) {
-        if(errored){return;}
+    public void setVar(String name,Object value){
+        engine.put(name,value);
+    };
+    public Object getVar(String name){
+        return engine.get(name);
+    }
+    public Object run(String fn,Object... args) {
+        if(errored){return null;}
+        Object obj=null;
         try {
-            ((Invocable) engine).invokeFunction(fn, args);
+            obj=((Invocable) engine).invokeFunction(fn, args);
         }catch (NoSuchMethodException e){
-            TkkGameLib.print("NoSuchMethodException:"+e);
+            //TkkGameLib.print("NoSuchMethodException:"+ miscTool.getError(e));
         }catch (ScriptException e){
             this.errored=true;
             appandConsole(e.getMessage());
-            TkkGameLib.print("ScriptException:"+e);
+            TkkGameLib.print("ScriptException:"+miscTool.getError(e));
         }catch (Exception e){
             this.errored=true;
             appandConsole(e.getMessage());
-            TkkGameLib.print("Exception:"+e);
+            TkkGameLib.print("Exception:"+miscTool.getError(e));
         }
         appandConsole(sw.getBuffer().toString().trim());
         sw.getBuffer().delete(0,sw.getBuffer().length());
+        return obj;
     }
 
 

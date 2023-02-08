@@ -22,6 +22,15 @@ public class arrayTool {
         return size;
     }
 
+    public static String arrayListToString(ArrayList arrayList){
+        StringBuffer SB=new StringBuffer("ArrayList[");
+        for(Object a:arrayList){
+            SB.append(a.toString());
+            SB.append(",");
+        }
+        SB.append("]");
+        return SB.toString();
+    }
 
 
 

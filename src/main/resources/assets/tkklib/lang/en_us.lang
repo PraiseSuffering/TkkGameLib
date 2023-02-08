@@ -17,7 +17,7 @@ command.tkkJS.error.lack=Error: Parameter missing
 command.tkkJS.error.codeError=Error: JS code
 command.tkkJS.error.typeError=Error:type error
 
-command.tkkJSRunFile.usage=/tkkJs <fileName+.js> <functionName> <client/server> [player]
+command.tkkJSRunFile.usage=/tkkJSRunFile <fileName+.js> <functionName> <client/server> [player]
 command.tkkJSRunFile.error.lack=Error: Parameter missing
 command.tkkJSRunFile.error.codeError=Error: JS code
 command.tkkJSRunFile.JsServerPrint=ServerPrint :
