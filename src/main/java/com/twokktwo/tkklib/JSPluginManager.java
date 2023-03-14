@@ -52,7 +52,7 @@ public enum JSPluginManager {
     public JsContainer[] pluginSort(JsContainer[] list){
         LinkedList<String> IDs=new LinkedList<>();
         LinkedList<JsContainer> linkedList=new LinkedList<>();
-        ArrayList<String> allIDs=new ArrayList();
+        ArrayList allIDs=new ArrayList();
         JsContainer[] copy=list.clone();
         for(int i=0;i<copy.length;i++){
             if(copy[i]==null){continue;}
@@ -71,8 +71,7 @@ public enum JSPluginManager {
                 allIDs.add(id);
             }
         }
-        int addPluginCount=0;
-        boolean run=true;
+        int addPluginCount;
         do{
             addPluginCount=0;
             plugin:
@@ -171,4 +170,7 @@ public enum JSPluginManager {
         }
     }
 
+    public JsContainer getPluginMain(String id){
+        return PLUGINS.get(id);
+    }
 }

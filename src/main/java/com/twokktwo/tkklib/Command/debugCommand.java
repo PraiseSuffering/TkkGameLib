@@ -2,6 +2,8 @@ package com.twokktwo.tkklib.Command;
 
 import com.twokktwo.tkklib.JSPluginManager;
 import com.twokktwo.tkklib.TkkGameLib;
+import com.twokktwo.tkklib.custonActions.Capability.ActionCapbility;
+import com.twokktwo.tkklib.custonActions.Capability.ActionContainer;
 import com.twokktwo.tkklib.gui.testGuiTool;
 import com.twokktwo.tkklib.js.JsContainer;
 import com.twokktwo.tkklib.js.JsTool;
@@ -16,15 +18,21 @@ import com.twokktwo.tkklib.template.Template;
 import com.twokktwo.tkklib.tool.map.mapTool;
 import com.twokktwo.tkklib.tool.testTool;
 import jdk.nashorn.api.scripting.ScriptObjectMirror;
+import moe.plushie.armourers_workshop.client.skin.cache.ClientSkinCache;
+import moe.plushie.armourers_workshop.common.skin.data.SkinDescriptor;
+import moe.plushie.armourers_workshop.utils.SkinNBTHelper;
 import net.minecraft.command.CommandBase;
 import net.minecraft.command.CommandException;
 import net.minecraft.command.ICommandSender;
 import net.minecraft.entity.player.EntityPlayer;
 import net.minecraft.entity.player.EntityPlayerMP;
+import net.minecraft.item.ItemStack;
 import net.minecraft.server.MinecraftServer;
+import net.minecraft.util.EnumHand;
 import net.minecraft.util.math.BlockPos;
 import net.minecraft.util.text.TextComponentString;
 import net.minecraft.world.World;
+import net.minecraftforge.fml.common.Optional;
 
 import javax.script.Invocable;
 import javax.script.ScriptEngine;
@@ -37,10 +45,23 @@ public class debugCommand extends CommandBase {
     @Override
     public void execute(MinecraftServer server, ICommandSender sender, String[] params) throws CommandException {
         World world = sender.getEntityWorld();
-        if(params!=null && params.length==6){
+        if(params.length==6){
             jsStorageTool.tkkmap.hashMap.clear();
             BlockPos pos1 = new BlockPos((double) parseInt(params[0]),(double) parseInt(params[1]),(double) parseInt(params[2]));
             BlockPos pos2 = new BlockPos((double) parseInt(params[3]),(double) parseInt(params[4]),(double) parseInt(params[5]));
+        }
+        if(params.length==3){
+            switch (params[0]) {
+                case "set":
+                    jsStorageTool.getTempMap("test").put(params[1],params[2]);
+                    sender.sendMessage(new TextComponentString(params[1]+":"+jsStorageTool.getTempMap("test").get(params[1])));
+                    break;
+                case "get":
+                    sender.sendMessage(new TextComponentString(params[1]+":"+jsStorageTool.getTempMap("test").get(params[1])));
+                    break;
+                default:
+                    sender.sendMessage(new TextComponentString("错误的" + params[0]));
+            }
         }
         if(params.length==1){
             Piece temp;
@@ -146,6 +167,50 @@ public class debugCommand extends CommandBase {
                     }
                     TkkGameLib.print("time:"+over3);
                     break;
+                case "cap":
+                    if(!(sender instanceof EntityPlayerMP)){return;}
+                    ActionContainer cap=sender.getCommandSenderEntity().getCapability(ActionCapbility.actionCap,null);
+                    //sender.sendMessage(new TextComponentString("cap:"+cap.getJS()));
+                    cap.setJS("test/js");
+                    cap.setEnable(true);
+                    cap.setTempDataString("test");
+                    cap.setTempDataInt(0);
+                    //TkkGameLib.print("enable:"+cap.getEnable());
+                    //TkkGameLib.print(sender.getCommandSenderEntity()+"cap:"+cap);
+
+                    ActionCapbility.upDataCap((EntityPlayerMP)sender,120,false);
+                    //ActionCapbility.upDataCap(sender.getCommandSenderEntity(),(EntityPlayerMP) sender.getCommandSenderEntity());
+                    break;
+                case "debugAdd":
+                    float[] frames=new float[]{3f,3f,3f,3f,3f,3f,3f,3f,3f,3f};
+                    float speed=0.1f;
+                    float fix=0f;
+                    int size=(1+frames.length)*frames.length/2;
+                    TkkGameLib.print("size:"+size);
+                    fix=size*0.1f/frames.length;
+                    for (int i1=0;i1<frames.length;i1++){
+                        frames[i1]-=fix;
+                    }
+                    for (int i1=1;i1<frames.length;i1++){
+                        frames[i1]=frames[i1-1]+speed;
+                    }
+                    String a="[";
+                    for (int i1=0;i1<frames.length;i1++){
+                        a+=","+frames[i1];
+                    }
+                    a+="]";
+                    TkkGameLib.print("frames:"+a);
+                    a="[,"+(3f-fix);
+                    for (int i1=2;i1<frames.length;i1++){
+                        a+=","+(3f-fix+(i1-1)*speed);
+                    }
+                    a+="]";
+                    TkkGameLib.print("Math:"+a);
+                    TkkGameLib.print("Math:"+(1f+(2-1)*0.1f));
+                    break;
+                case "api":
+                    testB(((EntityPlayerMP)sender.getCommandSenderEntity()).getHeldItem(EnumHand.MAIN_HAND));
+                    break;
                 default:
                     mapTool.see();
                     sender.sendMessage(new TextComponentString("错误的"+params[0]));
@@ -171,6 +236,13 @@ public class debugCommand extends CommandBase {
     @Override
     public String getUsage(ICommandSender sender) {
         return "command.cvMapPiece.usage";
+    }
+    @Optional.Method(modid = "armourers_workshop")
+    public void testB(ItemStack itemStack){
+        SkinDescriptor skinDescriptor = SkinNBTHelper.getSkinDescriptorFromStack(itemStack);
+        TkkGameLib.print("skinDescriptor"+skinDescriptor);
+        if(skinDescriptor==null){return;}
+        TkkGameLib.print("model:"+ ClientSkinCache.INSTANCE.getSkin(skinDescriptor));
     }
 
     @Override

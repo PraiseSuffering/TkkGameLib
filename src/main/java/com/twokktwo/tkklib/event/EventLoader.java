@@ -7,10 +7,12 @@ import net.minecraftforge.common.MinecraftForge;
 import net.minecraftforge.event.world.WorldEvent;
 import net.minecraftforge.fml.common.event.FMLPreInitializationEvent;
 import net.minecraftforge.fml.common.eventhandler.SubscribeEvent;
+import net.minecraftforge.fml.common.gameevent.TickEvent;
 import org.apache.logging.log4j.Level;
 
 public class EventLoader {
     public long lastSaveTime=0;
+    public static int clientTime=0;
     public EventLoader(FMLPreInitializationEvent event){
         MinecraftForge.EVENT_BUS.register(this);
     }
@@ -28,5 +30,9 @@ public class EventLoader {
             ((tkkSerializationMap)jsStorageTool.map.get(mapName)).save();
             TkkGameLib.logger.log(Level.INFO,"TkkGameLib:save "+mapName);
         }
+    }
+    @SubscribeEvent
+    public void tick(TickEvent.ClientTickEvent e){
+        clientTime++;
     }
 }

@@ -26,8 +26,9 @@ public class TkkGameLib
 {
     public static final String MODID = "tkklib";
     public static final String NAME = "TkkGameLib";
-    public static final String VERSION = "1.8.1";
-
+    public static final String VERSION = "1.9.2";
+    @Mod.Instance(TkkGameLib.MODID)
+    public static TkkGameLib instance;
     public static File MOD_DIR;
 
     public static MinecraftServer server;
@@ -91,6 +92,7 @@ public class TkkGameLib
     public void init(FMLInitializationEvent event)
     {
         // some example code
+        proxy.init(event);
         TkkGameLib.logger.log(Level.INFO,"MainJs.js run function FMLInitializationEvent");
         js.run("FMLInitializationEvent",event);
         TkkGameLib.logger.log(Level.INFO,"Plugins run function FMLInitializationEvent");

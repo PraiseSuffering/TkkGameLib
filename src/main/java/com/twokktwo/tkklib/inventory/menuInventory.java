@@ -3,10 +3,7 @@ package com.twokktwo.tkklib.inventory;
 import com.google.common.collect.Lists;
 import com.twokktwo.tkklib.js.JsContainer;
 import net.minecraft.entity.player.EntityPlayer;
-import net.minecraft.inventory.ClickType;
-import net.minecraft.inventory.IInventory;
-import net.minecraft.inventory.IInventoryChangedListener;
-import net.minecraft.inventory.ItemStackHelper;
+import net.minecraft.inventory.*;
 import net.minecraft.item.ItemStack;
 import net.minecraft.nbt.*;
 import net.minecraft.util.NonNullList;
@@ -31,6 +28,8 @@ public class menuInventory implements IInventory {
 
     public String print="";
 
+    public JsContainer getJS(){return JS;}
+    public void  setJS(JsContainer js){JS=js;}
 
     public NBTTagCompound writeToNBT(NBTTagCompound nbt){
         NBTTagList items=new NBTTagList();
@@ -294,10 +293,12 @@ public class menuInventory implements IInventory {
     public static class CloseEvent{
         public EntityPlayer player;
         public menuInventory inventory;
+        public Container container;
         public boolean end;
-        public CloseEvent(menuInventory inventory,EntityPlayer player,boolean e){
+        public CloseEvent(menuInventory inventory,EntityPlayer player,Container container,boolean e){
             this.inventory=inventory;
             this.player=player;
+            this.container=container;
             this.end=e;
         }
         public void sendMessage(String message){this.player.sendMessage(new TextComponentString(message));}
@@ -317,20 +318,29 @@ public class menuInventory implements IInventory {
         public int dragType;
         public ClickType clickTypeIn;
         public EntityPlayer player;
-        public boolean Canceled;
         public menuInventory inventory;
+        public menuChest container;
+
+        public boolean Canceled;
+        public boolean refresh=false;
         public ItemStack returnItem;
-        public clickSlotEvent(menuInventory inventory,int slotId,int dragType,ClickType clickTypeIn,EntityPlayer player,ItemStack returnItem){
+        public clickSlotEvent(menuInventory inventory,int slotId,int dragType,ClickType clickTypeIn,EntityPlayer player,menuChest container,ItemStack returnItem){
             this.inventory=inventory;
             this.slotId=slotId;
             this.dragType=dragType;
             this.clickTypeIn=clickTypeIn;
             this.player=player;
+            this.container=container;
             this.Canceled=false;
             this.returnItem=returnItem;
         }
         public void setCanceled(boolean bool){this.Canceled=bool;}
+        public void setRefresh(boolean bool){this.refresh=bool;}
         public void sendMessage(String message){this.player.sendMessage(new TextComponentString(message));}
+        public ItemStack getPointerItem(){return player.inventory.getItemStack();}
+        public void setPointerItem(ItemStack item){player.inventory.setItemStack(item);}
+        public ItemStack getSwitchingItem(){return container.getItemForIndex(slotId);}
+
 
         /*
         function clickEvent(e){

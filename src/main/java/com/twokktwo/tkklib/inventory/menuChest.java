@@ -107,6 +107,17 @@ public class menuChest extends Container implements Serializable {
         return this.lowerChestInventory;
     }
 
+    public ItemStack getItemForIndex(int index) {
+        ItemStack itemstack = null;
+        if(index<0||index>this.inventorySlots.size()){return itemstack;}
+        Slot slot = (Slot) this.inventorySlots.get(index);
+
+        if (slot != null && slot.getHasStack()) {
+            itemstack = slot.getStack();
+        }
+        return itemstack;
+    }
+
     public void onContainerClosed(EntityPlayer p_75134_1_){
 
         ClosedMenu event = new ClosedMenu(p_75134_1_,this);
@@ -114,7 +125,7 @@ public class menuChest extends Container implements Serializable {
         if(lowerChestInventory instanceof menuInventory) {
             if (((menuInventory) lowerChestInventory).JSOpen) {
                 try {
-                    ((menuInventory) lowerChestInventory).runJs(new menuInventory.CloseEvent((menuInventory)lowerChestInventory,p_75134_1_,false));
+                    ((menuInventory) lowerChestInventory).runJs(new menuInventory.CloseEvent((menuInventory)lowerChestInventory,p_75134_1_,this,false));
                 } catch (Exception e) {
                     p_75134_1_.sendMessage(new TextComponentString("\u00a7crun 'CloseEvent' throws:\u00a72" + e));
                 }
@@ -135,7 +146,7 @@ public class menuChest extends Container implements Serializable {
         if(lowerChestInventory instanceof menuInventory) {
             if (((menuInventory) lowerChestInventory).JSOpen) {
                 try {
-                    ((menuInventory) lowerChestInventory).runJs(new menuInventory.CloseEvent((menuInventory)lowerChestInventory,p_75134_1_,true));
+                    ((menuInventory) lowerChestInventory).runJs(new menuInventory.CloseEvent((menuInventory)lowerChestInventory,p_75134_1_,this,true));
                 } catch (Exception e) {
                     p_75134_1_.sendMessage(new TextComponentString("\u00a7crun 'CloseEvent' throws:\u00a72" + e));
                 }
@@ -158,7 +169,7 @@ public class menuChest extends Container implements Serializable {
         if(lowerChestInventory instanceof menuInventory) {
             if (((menuInventory) lowerChestInventory).JSOpen) {
                 ItemStack RI=ItemStack.EMPTY;
-                menuInventory.clickSlotEvent eventJs=new menuInventory.clickSlotEvent((menuInventory) this.lowerChestInventory, slotId, dragType, clickTypeIn, player,RI);
+                menuInventory.clickSlotEvent eventJs=new menuInventory.clickSlotEvent((menuInventory) this.lowerChestInventory, slotId, dragType, clickTypeIn, player,this,RI);
                 try {
                     ((menuInventory) lowerChestInventory).runJs(eventJs);
                 } catch (Exception e) {
@@ -171,6 +182,11 @@ public class menuChest extends Container implements Serializable {
                         ((EntityPlayerMP) player).sendContainerToPlayer(this);
                     }
                     return RI;
+                }
+                if(eventJs.refresh){
+                    if (player instanceof EntityPlayerMP) {
+                        ((EntityPlayerMP) player).sendContainerToPlayer(this);
+                    }
                 }
             }
         }

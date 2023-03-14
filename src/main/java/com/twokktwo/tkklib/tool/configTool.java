@@ -45,6 +45,44 @@ public class configTool {
         }
         return returnValue;
     }
+    public static int getConfigInt(String name,int def){
+        int returnValue=def;
+        StringBuffer rt=new StringBuffer();
+        try {
+            File file = new File(TkkGameLib.MOD_DIR.getCanonicalPath() + "/main/");
+            if (!file.exists()) {
+                file.mkdirs();
+            }
+            File files = new File(file.getCanonicalPath() +"/ TkkLibConfig.config");
+            if(!files.exists()) {
+                files.createNewFile();
+                FileWriter fw=new FileWriter(files);
+                fw.write(getDefaultConfig());
+                fw.close();
+            }
+            if (files.exists()) {
+                FileReader fr = new FileReader(files);
+                BufferedReader br = new BufferedReader(fr);
+                String temp;
+                while ((temp= br.readLine())!=null){
+                    rt.append("\n"+temp);
+                    String[] tempA=temp.split("=");
+                    if(tempA.length==2){
+                        if(tempA[0].equals(name)){
+                            returnValue=Integer.valueOf(tempA[1]);
+                        }
+                    }
+                }
+                fr.close();
+                br.close();
+            }
+        } catch (FileNotFoundException e) {
+            TkkGameLib.print("getJsFile() error:"+e);
+        } catch (IOException e) {
+            TkkGameLib.print("getJsFile() error:"+e);
+        }
+        return returnValue;
+    }
     private static String getDefaultConfig(){
         StringBuffer sb=new StringBuffer();
         sb.append("Main Config");
